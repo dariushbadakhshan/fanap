@@ -1,0 +1,19 @@
+# Add files here to ignore them from prettier formatting
+/dist
+/coverage
+/husky
+/deploy
+/.husky
+.eslintignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.base.yml
+.prettierignore
+example
+*.svg
+.gitlab-ci.yml
+package-lock.json
+.gitignore
+*.lock
+/.nx/cache
