@@ -26,6 +26,10 @@ export const textFieldStyles = {
   },
 
   '& .MuiInputBase-input': {
+    '&:-webkit-autofill': {
+      WebkitBoxShadow: `0 0 0 100px ${colorPalette.surface_main_secondary} inset`,
+      WebkitTextFillColor: colorPalette.content_main_primary
+    },
     fontSize: '14px'
   },
 

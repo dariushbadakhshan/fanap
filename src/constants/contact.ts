@@ -19,7 +19,7 @@ export const contactTypeLabels = {
   facebook: 'فیسبوک',
   telegram: 'تلگرام',
   twitter: 'توئیتر',
-  linedine: 'لینکداین',
+  linkedine: 'لینکداین',
   website: 'وبسایت'
 };
 
@@ -42,7 +42,7 @@ export const socialType = [
   },
   {
     value: ContactWaysEnum.LINKEDINE,
-    label: contactTypeLabels.linedine
+    label: contactTypeLabels.linkedine
   },
   {
     value: ContactWaysEnum.WEBSITE,

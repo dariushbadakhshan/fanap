@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { IoIosAdd } from 'react-icons/io';
+import { IoIosAdd as Add } from 'react-icons/io';
+import { MdEdit as Edit } from 'react-icons/md';
 
 import { Typography } from '@ui';
 import { colorPalette } from '@shared';
@@ -14,18 +15,37 @@ import classes from './contact.module.scss';
 
 const ContactContainer = () => {
   const [isFormCollapseOpen, setIsFormCollapseOpen] = useState<boolean>(false);
+  const [formEditItem, setFormEditItem] = useState<ContactModel | null>(null);
   const [contactList, setContactList] = useState<ContactModel[]>([]);
 
-  const handleUpdateContactList = (value: ContactModel) => {
-    setContactList((prev) => [value, ...prev]);
+  const handleUpdateContactList = (values: ContactModel) => {
+    if (formEditItem) {
+      setContactList((prev) => {
+        const remainigItems: ContactModel[] = prev.filter((item) => item.key !== values.key);
+
+        return [values, ...remainigItems];
+      });
+    } else {
+      setContactList((prev) => [values, ...prev]);
+    }
   };
 
-  const handleDeleteItem = (id: string) => {
+  const handleDeleteItem = (key: string) => {
     setContactList((prev) => {
-      const filterItems = prev.filter((item) => item.id !== id);
+      const filterItems = prev.filter((item) => item.key !== key);
 
       return filterItems;
     });
+  };
+
+  const handleEditItem = (item: ContactModel) => {
+    setIsFormCollapseOpen(true);
+    setFormEditItem(item);
+  };
+
+  const handleCloseContactForm = () => {
+    setIsFormCollapseOpen(false);
+    setFormEditItem(null);
   };
 
   return (
@@ -54,22 +74,29 @@ const ContactContainer = () => {
           color={colorPalette.content_main_brand}
           onClick={() => setIsFormCollapseOpen(true)}
         >
-          <IoIosAdd size={20} />
+          {formEditItem ? <Edit size={15} /> : <Add size={20} />}
 
-          {contactForm.newContact}
+          {formEditItem ? contactForm.editContact : contactForm.newContact}
         </Typography>
 
         <ContactForm
           open={isFormCollapseOpen}
-          onClose={() => setIsFormCollapseOpen(false)}
+          onClose={handleCloseContactForm}
           initialContactList={contactList}
           updateContactList={handleUpdateContactList}
+          editValues={formEditItem}
+          resetEditItem={() => setFormEditItem(null)}
         />
 
         {!!contactList.length && (
           <div className={classes.itemsWrapper}>
             {contactList.map((item) => (
-              <ContactItem key={item.id} contactItem={item} deleteItem={handleDeleteItem} />
+              <ContactItem
+                key={item.key}
+                contactItem={item}
+                deleteItem={handleDeleteItem}
+                editItem={() => handleEditItem(item)}
+              />
             ))}
           </div>
         )}

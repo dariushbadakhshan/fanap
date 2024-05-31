@@ -10,16 +10,12 @@ export enum ContactWaysEnum {
   FACEBOOK = 'facebook',
   TELEGRAM = 'telegram',
   TWITTER = 'twitter',
-  LINKEDINE = 'linedine',
+  LINKEDINE = 'linkedine',
   WEBSITE = 'website'
 }
 
-export type SocialTypeModel = {
-  value: keyof typeof ContactWaysEnum;
-  label: keyof typeof contactTypeLabels;
-};
-
 export type ContactModel = {
+  key: string;
   link: string;
   type: string;
   id: string;

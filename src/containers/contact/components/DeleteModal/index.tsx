@@ -6,6 +6,7 @@ import { Button, Typography } from '@ui';
 import { contactForm, deleteContactTexts } from '@constants';
 import { colorPalette } from '@shared';
 import { FormTextInput, Modal } from '@components';
+import { ContactModel } from '@models';
 
 import classes from './delete-modal.module.scss';
 
@@ -16,13 +17,13 @@ const formSchema = z.object({
 type formFields = z.infer<typeof formSchema>;
 
 type DeleteModalProps = {
-  contactId: string;
+  contactItem: ContactModel;
   open: boolean;
-  deleteItem: (id: string) => void;
+  deleteItem: (key: string) => void;
   onClose: () => void;
 };
 
-const DeleteModal = ({ contactId, open, deleteItem, onClose }: DeleteModalProps) => {
+const DeleteModal = ({ contactItem, open, deleteItem, onClose }: DeleteModalProps) => {
   const form = useForm<formFields>({
     resolver: zodResolver(formSchema),
     defaultValues: { confirm: '' }
@@ -33,7 +34,7 @@ const DeleteModal = ({ contactId, open, deleteItem, onClose }: DeleteModalProps)
       form.setError('confirm', { message: deleteContactTexts.error });
       return;
     }
-    deleteItem(contactId);
+    deleteItem(contactItem.key);
   };
 
   const handleCancelDelete = () => {
@@ -48,7 +49,7 @@ const DeleteModal = ({ contactId, open, deleteItem, onClose }: DeleteModalProps)
       content={
         <div className={classes.contentWrapper}>
           <Typography variant="label_small_regular" color={colorPalette.content_main_secondary}>
-            {`برای حذف مسیر ارتباطی ${contactId} لطفا تایید را بنویسید`}
+            {`برای حذف مسیر ارتباطی ${contactItem.id} لطفا تایید را بنویسید`}
           </Typography>
 
           <FormTextInput
