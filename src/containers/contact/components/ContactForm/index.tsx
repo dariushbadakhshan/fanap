@@ -1,19 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MenuItem } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { Button } from '@ui';
+import { Button, Typography } from '@ui';
 import { contactForm, contactFormsTexts, socialType } from '@constants';
-import { ContactFormEnum, ContactWaysEnum } from '@models';
+import { ContactFormEnum, ContactModel, ContactWaysEnum } from '@models';
 import { colorPalette, urlRegex } from '@shared';
 import { FormTextInput } from '@components';
+import { useUuid } from '@hooks';
 
 import SocialIcons from '../socialIcons';
+import { renderTypes } from '../renderTypes';
 
 import classes from './contact-form.module.scss';
 
@@ -37,17 +39,21 @@ const initialValues: formFields = {
 type ContactFormProps = {
   open: boolean;
   onClose: () => void;
-  initialContactList: formFields[];
-  updateContactList: (value: formFields) => void;
+  initialContactList: ContactModel[];
+  updateContactList: (value: ContactModel) => void;
+  editValues: ContactModel | null;
+  resetEditItem: () => void;
 };
 
 const ContactForm = ({
   open,
   onClose,
   initialContactList,
-  updateContactList
+  updateContactList,
+  editValues,
+  resetEditItem
 }: ContactFormProps) => {
-  const [contactList, setContactList] = useState<formFields[]>(initialContactList);
+  const [contactList, setContactList] = useState<ContactModel[]>(initialContactList);
 
   const form = useForm<formFields>({
     resolver: zodResolver(formSchema),
@@ -59,26 +65,47 @@ const ContactForm = ({
     name: 'type'
   });
 
+  const uniqId = useUuid();
+
   const handelSubmitForm = (values: formFields) => {
-    if (contactList?.find((item) => item.link === values.link)) {
+    if (!editValues && contactList?.find((item) => item.link === values.link)) {
       form.setError('link', { type: 'custom', message: contactFormsTexts.duplicateLink });
       return;
     }
 
-    if (contactList?.find((item) => item.id === values.id)) {
+    if (!editValues && contactList?.find((item) => item.id === values.id)) {
       form.setError('id', { type: 'custom', message: contactFormsTexts.duplicateId });
       return;
     }
 
-    updateContactList(values);
-    setContactList((prev) => [values, ...prev]);
-    form.reset();
+    if (editValues) {
+      setContactList((prev) => {
+        const remainigItems: ContactModel[] = prev.filter((item) => item.key !== editValues.key);
+
+        return [{ ...values, key: editValues.key }, ...remainigItems];
+      });
+      updateContactList({ ...values, key: editValues.key });
+      form.reset();
+      resetEditItem();
+    } else {
+      updateContactList({ ...values, key: uniqId });
+      setContactList((prev) => [{ ...values, key: uniqId }, ...prev]);
+      form.reset();
+    }
   };
 
   const handleCancel = () => {
     form.reset();
     onClose();
   };
+
+  useEffect(() => {
+    if (editValues) {
+      for (const [key, value] of Object.entries<string>(editValues)) {
+        form.setValue(key as keyof formFields, value);
+      }
+    }
+  }, [editValues]);
 
   const animate = {
     transition: { type: 'tween' },
@@ -93,6 +120,12 @@ const ContactForm = ({
       exit={{ height: 0, opacity: 1 }}
     >
       <form className={classes.formWrapper}>
+        <Typography variant="label_medium_medium" color={colorPalette.content_main_primary}>
+          {editValues
+            ? `${contactForm.editContact} ${renderTypes(editValues.type)}`
+            : contactForm.newContact}
+        </Typography>
+
         <div className={classes.inputsWraper}>
           <FormTextInput
             id={ContactFormEnum.TYPE}
@@ -133,7 +166,9 @@ const ContactForm = ({
             {contactForm.cancel}
           </Button>
           <Button onClick={form.handleSubmit(handelSubmitForm)} size="medium">
-            {contactForm.submit}
+            {editValues
+              ? `${contactForm.editContact} ${renderTypes(editValues.type)}`
+              : contactForm.submit}
           </Button>
         </div>
       </form>

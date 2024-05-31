@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
-import { MdEdit } from 'react-icons/md';
-import { FaTrashAlt } from 'react-icons/fa';
+import { MdEdit as Edit } from 'react-icons/md';
+import { FaTrashAlt as Trash } from 'react-icons/fa';
 
 import { Button, Typography } from '@ui';
 import { ContactModel, ContactWaysEnum } from '@models';
@@ -9,18 +9,25 @@ import { colorPalette } from '@shared';
 
 import DeleteModal from '../DeleteModal';
 import SocialIcons from '../socialIcons';
+import { renderTypes } from '../renderTypes';
 
 import classes from './contact-item.module.scss';
 
 type ContactItemProps = {
   contactItem: ContactModel;
   deleteItem: (id: string) => void;
+  editItem: () => void;
 };
 
-const ContactItem = ({ contactItem, deleteItem }: ContactItemProps) => {
+const ContactItem = ({ contactItem, deleteItem, editItem }: ContactItemProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-  const handleDeleteItem = (id: string) => {
-    deleteItem(id);
+
+  const handleDeleteItem = (key: string) => {
+    deleteItem(key);
+  };
+
+  const handleEditItem = () => {
+    editItem();
   };
 
   return (
@@ -37,7 +44,7 @@ const ContactItem = ({ contactItem, deleteItem }: ContactItemProps) => {
               size="15"
               color={colorPalette.content_main_primary}
             />
-            {contactItem.type}
+            {renderTypes(contactItem.type)}
           </Typography>
           <Typography variant="label_small_regular" color={colorPalette.content_main_secondary}>
             {contactForm.id}:{' '}
@@ -55,15 +62,16 @@ const ContactItem = ({ contactItem, deleteItem }: ContactItemProps) => {
 
         <div className={classes.actionsWrapper}>
           <Button
-            startIcon={<MdEdit size={15} color={colorPalette.content_main_brand} />}
+            startIcon={<Edit size={15} color={colorPalette.content_main_brand} />}
             size="small"
             variant="text"
             color="primary"
+            onClick={handleEditItem}
           >
             {contactForm.edit}
           </Button>
           <Button
-            startIcon={<FaTrashAlt size={15} color={colorPalette.content_conditional_negative} />}
+            startIcon={<Trash size={15} color={colorPalette.content_conditional_negative} />}
             size="small"
             variant="text"
             color="error"
@@ -77,7 +85,7 @@ const ContactItem = ({ contactItem, deleteItem }: ContactItemProps) => {
       <DeleteModal
         open={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        contactId={contactItem.id}
+        contactItem={contactItem}
         deleteItem={handleDeleteItem}
       />
     </Fragment>
