@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoIosAdd as Add } from 'react-icons/io';
 import { MdEdit as Edit } from 'react-icons/md';
 
@@ -8,6 +8,8 @@ import { Typography } from '@ui';
 import { colorPalette } from '@shared';
 import { contactForm, pagesTitle } from '@constants';
 import { ContactModel } from '@models';
+import { getSocialsService } from '@services';
+import { CatchErrorToast, eventBus } from '@helpers';
 
 import { ContactForm, ContactItem } from './components';
 
@@ -17,25 +19,23 @@ const ContactContainer = () => {
   const [isFormCollapseOpen, setIsFormCollapseOpen] = useState<boolean>(false);
   const [formEditItem, setFormEditItem] = useState<ContactModel | null>(null);
   const [contactList, setContactList] = useState<ContactModel[]>([]);
+  const [isContactFinalList, setIsContactFinalList] = useState<boolean>(false);
 
-  const handleUpdateContactList = (values: ContactModel) => {
-    if (formEditItem) {
-      setContactList((prev) => {
-        const remainigItems: ContactModel[] = prev.filter((item) => item.key !== values.key);
+  const handleGetSocials = async () => {
+    try {
+      const response = await getSocialsService();
 
-        return [values, ...remainigItems];
-      });
-    } else {
-      setContactList((prev) => [values, ...prev]);
+      if (response) {
+        setContactList(response);
+        setIsContactFinalList(true);
+      }
+    } catch (error) {
+      CatchErrorToast(error);
     }
   };
 
-  const handleDeleteItem = (key: string) => {
-    setContactList((prev) => {
-      const filterItems = prev.filter((item) => item.key !== key);
-
-      return filterItems;
-    });
+  const handleUpdateContactList = () => {
+    handleGetSocials();
   };
 
   const handleEditItem = (item: ContactModel) => {
@@ -47,6 +47,22 @@ const ContactContainer = () => {
     setIsFormCollapseOpen(false);
     setFormEditItem(null);
   };
+
+  useEffect(() => {
+    const subscription = eventBus.subscribe((event) => {
+      if (event && event?.type === 'deleteItem') {
+        handleGetSocials();
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    handleGetSocials();
+  }, []);
 
   return (
     <div className={classes.wrapper}>
@@ -79,24 +95,21 @@ const ContactContainer = () => {
           {formEditItem ? contactForm.editContact : contactForm.newContact}
         </Typography>
 
-        <ContactForm
-          open={isFormCollapseOpen}
-          onClose={handleCloseContactForm}
-          initialContactList={contactList}
-          updateContactList={handleUpdateContactList}
-          editValues={formEditItem}
-          resetEditItem={() => setFormEditItem(null)}
-        />
+        {isContactFinalList && (
+          <ContactForm
+            open={isFormCollapseOpen}
+            onClose={handleCloseContactForm}
+            initialContactList={contactList}
+            updateContactList={handleUpdateContactList}
+            editValues={formEditItem}
+            resetEditItem={() => setFormEditItem(null)}
+          />
+        )}
 
         {!!contactList.length && (
           <div className={classes.itemsWrapper}>
             {contactList.map((item) => (
-              <ContactItem
-                key={item.key}
-                contactItem={item}
-                deleteItem={handleDeleteItem}
-                editItem={() => handleEditItem(item)}
-              />
+              <ContactItem key={item.id} contactItem={item} editItem={() => handleEditItem(item)} />
             ))}
           </div>
         )}

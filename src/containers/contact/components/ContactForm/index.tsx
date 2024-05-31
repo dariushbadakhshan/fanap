@@ -9,10 +9,11 @@ import { z } from 'zod';
 
 import { Button, Typography } from '@ui';
 import { contactForm, contactFormsTexts, socialType } from '@constants';
-import { ContactFormEnum, ContactModel, ContactWaysEnum } from '@models';
+import { ContactFormEnum, ContactModel, ContactWaysEnum, SocialParamsDataModel } from '@models';
 import { colorPalette, urlRegex } from '@shared';
 import { FormTextInput } from '@components';
-import { useUuid } from '@hooks';
+import { createSocialsService, getSocialsService, updateSocialsService } from '@services';
+import { CatchErrorToast, eventBus } from '@helpers';
 
 import SocialIcons from '../socialIcons';
 import { renderTypes } from '../renderTypes';
@@ -20,27 +21,27 @@ import { renderTypes } from '../renderTypes';
 import classes from './contact-form.module.scss';
 
 const formSchema = z.object({
-  type: z.string().min(1, contactFormsTexts.type),
-  link: z
+  social_type: z.string().min(1, contactFormsTexts.type),
+  social_link: z
     .string()
     .min(1, contactFormsTexts.link)
     .regex(urlRegex, { message: contactFormsTexts.wrongUrl }),
-  id: z.string().min(1, contactFormsTexts.id)
+  social_id: z.string().min(1, contactFormsTexts.id)
 });
 
 type formFields = z.infer<typeof formSchema>;
 
 const initialValues: formFields = {
-  type: '',
-  link: '',
-  id: ''
+  social_link: '',
+  social_type: '',
+  social_id: ''
 };
 
 type ContactFormProps = {
   open: boolean;
   onClose: () => void;
   initialContactList: ContactModel[];
-  updateContactList: (value: ContactModel) => void;
+  updateContactList: () => void;
   editValues: ContactModel | null;
   resetEditItem: () => void;
 };
@@ -62,35 +63,65 @@ const ContactForm = ({
 
   const watchType = useWatch({
     control: form.control,
-    name: 'type'
+    name: 'social_type'
   });
 
-  const uniqId = useUuid();
+  const handleGetSocials = async () => {
+    try {
+      const response = await getSocialsService();
+
+      if (response) {
+        setContactList(response);
+      }
+    } catch (error) {
+      CatchErrorToast(error);
+    }
+  };
+
+  const handleCreateSocials = async (requestBody: SocialParamsDataModel) => {
+    try {
+      const response = await createSocialsService(requestBody);
+      if (response) {
+        handleGetSocials();
+      }
+    } catch (error) {
+      CatchErrorToast(error);
+    }
+  };
+
+  const handleUpdateSocials = async (requestBody: SocialParamsDataModel) => {
+    try {
+      if (editValues) {
+        const response = await updateSocialsService(editValues?.id, requestBody);
+        if (response) {
+          handleGetSocials();
+        }
+      }
+    } catch (error) {
+      CatchErrorToast(error);
+    }
+  };
 
   const handelSubmitForm = (values: formFields) => {
-    if (!editValues && contactList?.find((item) => item.link === values.link)) {
-      form.setError('link', { type: 'custom', message: contactFormsTexts.duplicateLink });
+    if (!editValues && contactList?.find((item) => item.social_link === values.social_link)) {
+      form.setError('social_link', { type: 'custom', message: contactFormsTexts.duplicateLink });
       return;
     }
 
-    if (!editValues && contactList?.find((item) => item.id === values.id)) {
-      form.setError('id', { type: 'custom', message: contactFormsTexts.duplicateId });
+    if (!editValues && contactList?.find((item) => item.social_id === values.social_id)) {
+      form.setError('social_id', { type: 'custom', message: contactFormsTexts.duplicateId });
       return;
     }
 
     if (editValues) {
-      setContactList((prev) => {
-        const remainigItems: ContactModel[] = prev.filter((item) => item.key !== editValues.key);
-
-        return [{ ...values, key: editValues.key }, ...remainigItems];
-      });
-      updateContactList({ ...values, key: editValues.key });
+      handleUpdateSocials(values);
       form.reset();
       resetEditItem();
+      updateContactList();
     } else {
-      updateContactList({ ...values, key: uniqId });
-      setContactList((prev) => [{ ...values, key: uniqId }, ...prev]);
+      handleCreateSocials(values);
       form.reset();
+      updateContactList();
     }
   };
 
@@ -107,6 +138,18 @@ const ContactForm = ({
     }
   }, [editValues]);
 
+  useEffect(() => {
+    const subscription = eventBus.subscribe((event) => {
+      if (event && event?.type === 'deleteItem') {
+        handleGetSocials();
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   const animate = {
     transition: { type: 'tween' },
     height: open ? 'auto' : 0
@@ -122,14 +165,14 @@ const ContactForm = ({
       <form className={classes.formWrapper}>
         <Typography variant="label_medium_medium" color={colorPalette.content_main_primary}>
           {editValues
-            ? `${contactForm.editContact} ${renderTypes(editValues.type)}`
+            ? `${contactForm.editContact} ${renderTypes(editValues.social_type)}`
             : contactForm.newContact}
         </Typography>
 
         <div className={classes.inputsWraper}>
           <FormTextInput
-            id={ContactFormEnum.TYPE}
-            name={ContactFormEnum.TYPE}
+            id={ContactFormEnum.SOCIALTYPE}
+            name={ContactFormEnum.SOCIALTYPE}
             label={`${contactForm.type}*`}
             control={form.control}
             startAdornment={
@@ -148,14 +191,14 @@ const ContactForm = ({
             ))}
           </FormTextInput>
           <FormTextInput
-            id={ContactFormEnum.LINK}
-            name={ContactFormEnum.LINK}
+            id={ContactFormEnum.SOCIALLINK}
+            name={ContactFormEnum.SOCIALLINK}
             label={contactForm.link}
             control={form.control}
           />
           <FormTextInput
-            id={ContactFormEnum.ID}
-            name={ContactFormEnum.ID}
+            id={ContactFormEnum.SOCIALID}
+            name={ContactFormEnum.SOCIALID}
             label={contactForm.id}
             control={form.control}
           />
@@ -167,7 +210,7 @@ const ContactForm = ({
           </Button>
           <Button onClick={form.handleSubmit(handelSubmitForm)} size="medium">
             {editValues
-              ? `${contactForm.editContact} ${renderTypes(editValues.type)}`
+              ? `${contactForm.editContact} ${renderTypes(editValues.social_type)}`
               : contactForm.submit}
           </Button>
         </div>
