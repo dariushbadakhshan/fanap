@@ -1,0 +1,12 @@
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actionsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}

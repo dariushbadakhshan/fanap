@@ -1,7 +1,7 @@
-import { HomeContainer } from "@containers";
+import { redirect } from 'next/navigation';
 
 const HomePage = () => {
-  return <HomeContainer />;
+  redirect('/profile/contact');
 };
 
 export default HomePage;

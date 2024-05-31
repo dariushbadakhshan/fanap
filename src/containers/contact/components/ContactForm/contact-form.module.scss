@@ -1,0 +1,28 @@
+.formWrapper {
+  width: 100%;
+  height: max-content;
+  background-color: var(--fanap-palette-surface_main_secondary);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .inputsWraper {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+
+    @media only screen and (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  .buttonsWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+  }
+}

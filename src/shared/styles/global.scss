@@ -1,0 +1,51 @@
+html {
+  -webkit-text-size-adjust: 100%;
+  line-height: 1.5;
+  tab-size: 4;
+  scroll-behavior: smooth;
+}
+
+body {
+  line-height: inherit;
+  background-color: var(--fanap-palette-surface_main_background);
+  user-select: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+p,
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
+
+h1,
+h2 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+a:hover,
+a:active,
+a:focus,
+a:focus-visible {
+  outline: none;
+  border: 0;
+  background-color: transparent;
+}
