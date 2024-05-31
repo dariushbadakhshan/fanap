@@ -1,5 +1,6 @@
 import '../shared/styles/global.scss';
 
+import { ToastContainer } from 'react-toastify';
 import NextTopLoader from 'nextjs-toploader';
 
 import { fontsHelper } from '@helpers';
@@ -23,6 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ThemeRegistry options={{ key: 'fanap' }}>
           <NextTopLoader shadow="" color={colorPalette.surface_main_brand} zIndex={1600} />
           {children}
+          <ToastContainer />
         </ThemeRegistry>
       </body>
     </html>

@@ -1,9 +1,7 @@
-import { contactTypeLabels } from '@constants';
-
 export enum ContactFormEnum {
-  TYPE = 'type',
-  LINK = 'link',
-  ID = 'id'
+  SOCIALTYPE = 'social_type',
+  SOCIALLINK = 'social_link',
+  SOCIALID = 'social_id'
 }
 export enum ContactWaysEnum {
   INSTAGRAM = 'instagram',
@@ -15,8 +13,14 @@ export enum ContactWaysEnum {
 }
 
 export type ContactModel = {
-  key: string;
-  link: string;
-  type: string;
   id: string;
+  social_link: string;
+  social_type: string;
+  social_id: string;
+};
+
+export type SocialParamsDataModel = {
+  social_type: string;
+  social_id: string;
+  social_link: string;
 };

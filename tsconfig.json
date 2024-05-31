@@ -24,7 +24,6 @@
       "@services": ["./src/services"],
       "@containers": ["./src/containers"],
       "@shared": ["./src/shared"],
-      "@providers": ["./src/providers"],
       "@hooks": ["./src/hooks"],
       "@constants": ["./src/constants"],
       "@ui": ["./src/ui"]

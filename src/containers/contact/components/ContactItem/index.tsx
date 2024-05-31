@@ -15,16 +15,11 @@ import classes from './contact-item.module.scss';
 
 type ContactItemProps = {
   contactItem: ContactModel;
-  deleteItem: (id: string) => void;
   editItem: () => void;
 };
 
-const ContactItem = ({ contactItem, deleteItem, editItem }: ContactItemProps) => {
+const ContactItem = ({ contactItem, editItem }: ContactItemProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-
-  const handleDeleteItem = (key: string) => {
-    deleteItem(key);
-  };
 
   const handleEditItem = () => {
     editItem();
@@ -40,22 +35,22 @@ const ContactItem = ({ contactItem, deleteItem, editItem }: ContactItemProps) =>
             color={colorPalette.content_main_primary}
           >
             <SocialIcons
-              label={contactItem.type as ContactWaysEnum}
+              label={contactItem.social_type as ContactWaysEnum}
               size="15"
               color={colorPalette.content_main_primary}
             />
-            {renderTypes(contactItem.type)}
+            {renderTypes(contactItem.social_type)}
           </Typography>
           <Typography variant="label_small_regular" color={colorPalette.content_main_secondary}>
             {contactForm.id}:{' '}
             <Typography variant="label_small_regular" color={colorPalette.content_main_primary}>
-              {contactItem.id}
+              {contactItem.social_id}
             </Typography>
           </Typography>
           <Typography variant="label_small_regular" color={colorPalette.content_main_secondary}>
             {contactForm.link}:{' '}
             <Typography variant="label_small_regular" color={colorPalette.content_main_brand}>
-              {contactItem.link}
+              {contactItem.social_link}
             </Typography>
           </Typography>
         </div>
@@ -86,7 +81,6 @@ const ContactItem = ({ contactItem, deleteItem, editItem }: ContactItemProps) =>
         open={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         contactItem={contactItem}
-        deleteItem={handleDeleteItem}
       />
     </Fragment>
   );

@@ -1,6 +1,8 @@
 .mainLayout {
   width: 100svw;
-  height: 100svh;
+  min-height: 100svh;
+  height: 100%;
+  padding-bottom: 70px;
   background-color: var(--fanap-palette-surface_main_background);
   margin: 0 auto;
   position: relative;

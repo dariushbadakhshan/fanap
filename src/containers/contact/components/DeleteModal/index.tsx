@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -7,6 +8,8 @@ import { contactForm, deleteContactTexts } from '@constants';
 import { colorPalette } from '@shared';
 import { FormTextInput, Modal } from '@components';
 import { ContactModel } from '@models';
+import { deleteSocialsService } from '@services';
+import { eventBus, CatchErrorToast } from '@helpers';
 
 import classes from './delete-modal.module.scss';
 
@@ -19,22 +22,33 @@ type formFields = z.infer<typeof formSchema>;
 type DeleteModalProps = {
   contactItem: ContactModel;
   open: boolean;
-  deleteItem: (key: string) => void;
   onClose: () => void;
 };
 
-const DeleteModal = ({ contactItem, open, deleteItem, onClose }: DeleteModalProps) => {
+const DeleteModal = ({ contactItem, open, onClose }: DeleteModalProps) => {
+  const router = useRouter();
   const form = useForm<formFields>({
     resolver: zodResolver(formSchema),
     defaultValues: { confirm: '' }
   });
+
+  const handleDeleteSocials = async (id: string) => {
+    try {
+      await deleteSocialsService(id);
+      eventBus.next({
+        type: 'deleteItem'
+      });
+    } catch (error) {
+      CatchErrorToast(error);
+    }
+  };
 
   const handleSubmitForm = (values: formFields) => {
     if (values.confirm !== contactForm.accept) {
       form.setError('confirm', { message: deleteContactTexts.error });
       return;
     }
-    deleteItem(contactItem.key);
+    handleDeleteSocials(contactItem.id);
   };
 
   const handleCancelDelete = () => {
