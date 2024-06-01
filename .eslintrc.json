@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "extends": [
+    "next",
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
+  ],
+  "plugins": ["prettier", "@typescript-eslint"],
+  "globals": {
+    "React": "readonly"
+  },
+  "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "no-use-before-define": "error",
+    "react/no-array-index-key": "warn",
+    "no-duplicate-case": "warn",
+    "no-empty": "warn",
+    "no-empty-function": "warn",
+    "no-lonely-if": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/react-in-jsx-scope": "warn"
+  }
+}

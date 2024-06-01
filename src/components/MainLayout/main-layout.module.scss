@@ -1,0 +1,33 @@
+.mainLayout {
+  width: 100svw;
+  min-height: 100svh;
+  height: 100%;
+  padding-bottom: 70px;
+  background-color: var(--fanap-palette-surface_main_background);
+  margin: 0 auto;
+  position: relative;
+  overflow-x: scroll;
+  display: flex;
+  justify-content: center;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .themeToggle {
+    width: 35px;
+    height: 35px;
+    border-radius: 5px 5px 5px 5px;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    z-index: 10;
+    cursor: pointer;
+    background-color: var(--fanap-palette-surface_main_brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
