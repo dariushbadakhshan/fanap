@@ -1,38 +1,44 @@
 'use client';
 
 import React from 'react';
-import { ThemeOptions } from '@mui/material/styles';
-import { createTheme } from '@mui/material/styles';
 
-import { colorPalette } from '../colorPalette';
-import { typography } from '../typography';
+import { darkColorPalette, lightColorPalette } from '../colorPalette';
 
-export const themePalette = {
+export const lightThemePalette = {
   primary: {
-    main: colorPalette.surface_main_brand,
-    contrastText: colorPalette.surface_main
+    main: lightColorPalette.surface_main_brand,
+    contrastText: lightColorPalette.surface_main
   },
   secondary: {
-    main: colorPalette.surface_main_secondary
+    main: lightColorPalette.surface_main_secondary
   },
   error: {
-    main: colorPalette.surface_conditional_negative
+    main: lightColorPalette.surface_conditional_negative
   },
   sunset: {
-    main: colorPalette.surface_main_brand,
+    main: lightColorPalette.surface_main_brand,
     contrastText: '#fff'
   },
-  ...colorPalette
+  ...lightColorPalette
 };
 
-export const lightTheme: ThemeOptions = createTheme({
-  direction: 'rtl',
-  palette: {
-    mode: 'light',
-    ...themePalette
+export const darkThemePalette = {
+  primary: {
+    main: darkColorPalette.surface_main_brand,
+    contrastText: darkColorPalette.surface_main
   },
-  typography
-});
+  secondary: {
+    main: darkColorPalette.surface_main_secondary
+  },
+  error: {
+    main: darkColorPalette.surface_conditional_negative
+  },
+  sunset: {
+    main: darkColorPalette.surface_main_brand,
+    contrastText: '#fff'
+  },
+  ...darkColorPalette
+};
 
 declare module '@mui/material/styles' {
   interface Palette {

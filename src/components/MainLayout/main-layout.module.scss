@@ -15,4 +15,19 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  .themeToggle {
+    width: 35px;
+    height: 35px;
+    border-radius: 5px 5px 5px 5px;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    z-index: 10;
+    cursor: pointer;
+    background-color: var(--fanap-palette-surface_main_brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
